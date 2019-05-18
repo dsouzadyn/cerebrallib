@@ -23,9 +23,10 @@ $ cargo add cerebrallib --git https://github.com/dsouzadyn/cerebrallib
 ```rust
 // src/main.rs code
 use cerebrallib::cerebral;
+use std::io
 fn main() {
     let code = String::from("++++");
-    let mut vm = cerebral::CerebralVM::new(code);
+    let mut vm = cerebral::CerebralVM::new(code, io::stdin(), io::stdout());
     vm.execute();
 }
 ```
