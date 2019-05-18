@@ -2,6 +2,38 @@
 
 Cerebrallib is a library for creating a brainfuck VM.
 
-### Usage
+### Installation
+1. Create a new cargo project
+```bash
+$ cargo new project_name
+$ cd project_name
+```
+2. Install `cargo-edit`
+```bash
+$ cargo install cargo-edit
+```
+3. Install `cerebrallib`
+```bash
+$ cargo add cerebrallib --git https://github.com/dsouzadyn/cerebrallib
+```
+4. Done
 
-TODO
+### Usage
+1. Code
+```rust
+// src/main.rs code
+use cerebrallib::cerebral;
+fn main() {
+    let code = "++++";
+    let mut vm = cerebral::CerebralVM::new(code);
+    vm.execute();
+}
+```
+2. Build
+```bash
+$ cargo build
+```
+3. Run
+```bash
+$ cargo run
+```
