@@ -1,24 +1,25 @@
-use std::io;
 use std::fmt;
-use std::io::Read;
+use std::io::{Read, Write};
 use std::collections::{HashMap, LinkedList};
 
-pub struct CerebralVM {
+pub struct CerebralVM<I: Read, O: Write> {
     code: String,
+    input: I,
+    output: O,
     data_ptr: usize,
     instruction_ptr: usize,
-    memory: [u8; 30000],
+    memory: [i8; 30000],
     bracs: HashMap<usize, usize>,
 }
 
-impl fmt::Debug for CerebralVM {
+impl<I: Read, O: Write> fmt::Debug for CerebralVM<I, O> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Point {{ code: {}, data_ptr: {}, instruction_ptr: {} }}", self.code, self.data_ptr, self.instruction_ptr)
     }
 }
 
-impl CerebralVM {
-    pub fn new(c: String) -> Self {
+impl<I: Read, O: Write> CerebralVM<I, O> {
+    pub fn new(c: String, inp: I, out: O) -> Self {
         let mut stk = LinkedList::new();
         let mut tbracs:HashMap<usize, usize> = HashMap::new();
         for (i, c) in c.chars().enumerate() {
@@ -33,6 +34,8 @@ impl CerebralVM {
         }
         return CerebralVM {
             code: c,
+            input: inp,
+            output: out,
             data_ptr: 0,
             instruction_ptr: 0,
             memory: [0; 30000],
@@ -76,16 +79,15 @@ impl CerebralVM {
         }
     }
     pub fn print_data(&mut self) {
-        print!("{}", self.memory[self.data_ptr] as char);
+        self.output.write(&[self.memory[self.data_ptr] as u8]).unwrap();
         self.instruction_ptr += 1;
     }
     pub fn read_data(&mut self) {
-        self.memory[self.data_ptr] = io::stdin().bytes().next().and_then(|r| r.ok()).map(|b| b as u8).unwrap();
+        self.memory[self.data_ptr] = self.input.by_ref().bytes().next().and_then(|r| r.ok()).map(|b| b as i8).expect("EOF reached at stdin");
         self.instruction_ptr += 1;
     }
     pub fn execute(&mut self) {
-        loop {
-            if self.instruction_ptr == self.code.len() { break; }
+        while self.instruction_ptr < self.code.len() {
             match self.code.as_bytes()[self.instruction_ptr] as char {
                 '>' => self.inc_data_ptr(),
                 '<' => self.dec_data_ptr(),
