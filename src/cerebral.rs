@@ -3,7 +3,7 @@ use std::io::{Read, Write};
 use std::collections::{HashMap, LinkedList};
 
 pub struct CerebralVM<I: Read, O: Write> {
-    code: String,
+    code: Vec<u8>,
     input: I,
     output: O,
     data_ptr: usize,
@@ -14,7 +14,7 @@ pub struct CerebralVM<I: Read, O: Write> {
 
 impl<I: Read, O: Write> fmt::Debug for CerebralVM<I, O> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Point {{ code: {}, data_ptr: {}, instruction_ptr: {} }}", self.code, self.data_ptr, self.instruction_ptr)
+        write!(f, "Point {{ code: {:?}, data_ptr: {}, instruction_ptr: {} }}", self.code, self.data_ptr, self.instruction_ptr)
     }
 }
 
@@ -22,9 +22,10 @@ impl<I: Read, O: Write> CerebralVM<I, O> {
     pub fn new(c: String, inp: I, out: O) -> Self {
         let mut stk = LinkedList::new();
         let mut tbracs:HashMap<usize, usize> = HashMap::new();
-        for (i, c) in c.chars().enumerate() {
-            match c {
-                '[' => stk.push_back(i),
+        let tc = c.into_bytes();
+        for (i, c) in tc.iter().enumerate() {
+            match *c as char {
+                '['=> stk.push_back(i),
                 ']' => {
                     tbracs.insert(i, *stk.back().unwrap());
                     tbracs.insert(stk.pop_back().unwrap(), i);
@@ -33,7 +34,7 @@ impl<I: Read, O: Write> CerebralVM<I, O> {
             }
         }
         return CerebralVM {
-            code: c,
+            code: tc,
             input: inp,
             output: out,
             data_ptr: 0,
@@ -90,7 +91,7 @@ impl<I: Read, O: Write> CerebralVM<I, O> {
     }
     pub fn execute(&mut self) {
         while self.instruction_ptr < self.code.len() {
-            match self.code.as_bytes()[self.instruction_ptr] as char {
+            match self.code[self.instruction_ptr] as char {
                 '>' => self.inc_data_ptr(),
                 '<' => self.dec_data_ptr(),
                 '+' => self.inc_data(),

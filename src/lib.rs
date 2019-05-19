@@ -18,7 +18,7 @@ mod tests {
     fn increment_data_ptr() {
         let inp = io::stdin();
         let out = io::stdout();
-        let code = String::from (">>>>");
+        let code = String::from(">>>>");
         let mut vm = CerebralVM::new(code, inp, out);
         vm.execute();
         assert_eq!(vm.get_data_ptr(), 4);
