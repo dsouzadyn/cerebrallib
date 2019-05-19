@@ -83,7 +83,9 @@ impl<I: Read, O: Write> CerebralVM<I, O> {
         self.instruction_ptr += 1;
     }
     pub fn read_data(&mut self) {
-        self.memory[self.data_ptr] = self.input.by_ref().bytes().next().and_then(|r| r.ok()).map(|b| b as i8).expect("EOF reached at stdin");
+        let mut val: u8 = 0;
+        self.input.read_exact(std::slice::from_mut(&mut val)).expect("EOF reacted at stdin");
+        self.memory[self.data_ptr] = val as i8;
         self.instruction_ptr += 1;
     }
     pub fn execute(&mut self) {
