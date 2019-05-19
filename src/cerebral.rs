@@ -51,43 +51,33 @@ impl<I: Read, O: Write> CerebralVM<I, O> {
     }
     pub fn inc_data(&mut self) {
         self.memory[self.data_ptr] += 1;
-        self.instruction_ptr += 1;
     }
     pub fn dec_data(&mut self) {
         self.memory[self.data_ptr] -= 1;
-        self.instruction_ptr += 1;
     }
     pub fn inc_data_ptr(&mut self) {
         self.data_ptr += 1;
-        self.instruction_ptr += 1;
     }
     pub fn dec_data_ptr(&mut self) {
         self.data_ptr -= 1;
-        self.instruction_ptr += 1;
     }
     pub fn jump_forward(&mut self) {
         if self.memory[self.data_ptr] == 0 {
-            self.instruction_ptr = self.bracs[&self.instruction_ptr] + 1;
-        } else {
-            self.instruction_ptr += 1;
+            self.instruction_ptr = self.bracs[&self.instruction_ptr];
         }
     }
     pub fn jump_backward(&mut self) {
         if self.memory[self.data_ptr] != 0 {
-            self.instruction_ptr = self.bracs[&self.instruction_ptr] + 1;
-        } else {
-            self.instruction_ptr += 1;
+            self.instruction_ptr = self.bracs[&self.instruction_ptr];
         }
     }
     pub fn print_data(&mut self) {
         self.output.write(&[self.memory[self.data_ptr] as u8]).unwrap();
-        self.instruction_ptr += 1;
     }
     pub fn read_data(&mut self) {
         let mut val: u8 = 0;
         self.input.read_exact(std::slice::from_mut(&mut val)).expect("EOF reacted at stdin");
         self.memory[self.data_ptr] = val as i8;
-        self.instruction_ptr += 1;
     }
     pub fn execute(&mut self) {
         while self.instruction_ptr < self.code.len() {
@@ -102,7 +92,7 @@ impl<I: Read, O: Write> CerebralVM<I, O> {
                 ',' => self.read_data(),
                 _ => self.instruction_ptr += 1
             };
+            self.instruction_ptr += 1;
         }
-        println!();
     }
 }
