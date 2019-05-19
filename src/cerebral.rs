@@ -90,7 +90,7 @@ impl<I: Read, O: Write> CerebralVM<I, O> {
                 ']' => self.jump_backward(),
                 '.' => self.print_data(),
                 ',' => self.read_data(),
-                _ => self.instruction_ptr += 1
+                _ => {}
             };
             self.instruction_ptr += 1;
         }
