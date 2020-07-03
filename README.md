@@ -2,6 +2,8 @@
 
 Cerebrallib is a library for creating a brainfuck VM.
 
+![Rust](https://github.com/dsouzadyn/cerebrallib/workflows/Rust/badge.svg?branch=master)
+
 ### Installation
 1. Create a new cargo project
 ```bash
